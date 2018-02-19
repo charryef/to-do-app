@@ -6,21 +6,26 @@ function onReady() {
 
   function createNewToDo() {
     if(!newToDoText.value) { return; }
-
-    toDos.push({
+    let prevToDos = JSON.parse(localStorage.getItem("toDos"));
+    prevToDos.push({
       title: newToDoText.value,
       complete: false,
       id: id++,
     });
     id ++;
     newToDoText.value = '';
-    console.log(toDos);
-    renderTheUI();  
+
+    localStorage.setItem("toDos", JSON.stringify(prevToDos));
+    renderTheUI();
   }
 
   function deleteToDo(e) {
-    console.log(e);
-    return toDos.filter(item => item.id !== e);
+    let tempToDos = JSON.parse(localStorage.getItem("toDos"));
+
+      localStorage.setItem("toDos", "");
+      tempToDos = tempToDos.filter(item => item.id !== e);
+
+      localStorage.setItem("toDos", JSON.stringify(tempToDos));
   }
 
 
@@ -28,12 +33,12 @@ function onReady() {
     const toDoList = document.getElementById('toDoList');
 
     toDoList.textContent = '';
-
-    toDos.forEach(function(toDo) {
+    let tempToDos = JSON.parse(localStorage.getItem("toDos"));
+    tempToDos.forEach(function(toDo) {
       const newLi = document.createElement('li');
       const checkbox = document.createElement('input');
       checkbox.type = "checkbox";
-
+      checkbox.value = toDo.complete;
       newLi.textContent = toDo.title;
 
       toDoList.appendChild(newLi);
@@ -47,7 +52,8 @@ function onReady() {
       deleteToDoButton.value="Delete To-Do!";
       deleteToDoButton.onclick=function(e) {
 
-        toDos=deleteToDo(toDo.id);
+
+        deleteToDo(toDo.id);
         renderTheUI();
       }
       newLi.appendChild(deleteToDoButton);
